@@ -164,15 +164,15 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.popular_item:
-                loadMovieData("popular");
-                return true;
-            case R.id.top_rated_item:
-                loadMovieData("top_rated");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+        if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.popular_item) {
+            loadMovieData("popular");
+        }else if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.top_rated_item) {
+            loadMovieData("top_rated");
+        }else {
+            alertUserOfError();
         }
+
+        return super.onOptionsItemSelected(item);
     }
 }
