@@ -30,8 +30,6 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     private GridLayoutAdapter gridLayoutAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
-    private GridLayoutManager gridLayoutManager;
-    MovieData[] movieData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
         showMovieDataView();
         String apiAddressKey = ""; /* Place your API KEY here*/
         String sortParam = sortMovie;
-        new FetchMovieTask().execute(apiAddressKey, sortParam);
+        new FetchMovieTaskListener.FetchMovieTask(this, new FetchMovieTaskCompleteListener()).execute(apiAddressKey, sortParam);
     }
 
     private void alertUserOfError(){
@@ -99,57 +97,11 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
         startActivity(intent);
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
+    public class FetchMovieTaskCompleteListener implements FetchMovieTaskListener<MovieData> {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
+        public void onTaskComplete(MovieData[] moviePosters) {
 
-        @Override
-        protected MovieData[] doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            String apiUrl = params[0];
-            String sortUrl = params[1];
-            URL movieRequestUrl = NetworkUtils.buildUrl(apiUrl, sortUrl);
-
-            try {
-                String jsonMovieResponse = NetworkUtils
-                        .getResponseFromHttpUrl(movieRequestUrl);
-
-
-                JSONObject movieResponse = new JSONObject(jsonMovieResponse);
-                JSONArray movieResults = movieResponse.getJSONArray("results");
-                movieData = new MovieData[movieResults.length()];
-
-                for (int i = 0; i < movieResults.length(); i++) {
-                    JSONObject movieResult = movieResults.getJSONObject(i);
-                    MovieData data = new MovieData();
-                    data.setPosterPath(movieResult.getString("poster_path"));
-                    data.setId(movieResult.getInt("id"));
-                    data.setOriginalTitle(movieResult.getString("title"));
-                    data.setOverView(movieResult.getString("overview"));
-                    data.setReleaseDate(movieResult.getString("release_date"));
-                    data.setVoteAverage(movieResult.getDouble("vote_average"));
-
-                    movieData[i] = data;
-                }
-
-                return movieData;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(MovieData[] moviePosters) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (moviePosters != null) {
                 showMovieDataView();
@@ -157,6 +109,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
             }else{
                 showErrorMessage();
             }
+
         }
     }
 
