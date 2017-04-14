@@ -30,19 +30,19 @@ public class MovieDetailActivity extends AppCompatActivity {
         poster = (ImageView) findViewById(R.id.poster_image);
 
         Intent intent = getIntent();
+        if(intent.hasExtra("Title") || intent.hasExtra("Plot") || intent.hasExtra("Rating") || intent.hasExtra("Date") || intent.hasExtra("Poster")) {
+            title.setText(intent.getStringExtra("Title"));
+            overview.setText(intent.getStringExtra("Plot"));
+            userRating.setText(intent.getDoubleExtra("Rating", v_average) + "/10");
+            posterString = intent.getStringExtra("Poster");
 
-        title.setText(intent.getStringExtra("Title"));
-        overview.setText(intent.getStringExtra("Plot"));
-        userRating.setText(intent.getDoubleExtra("Rating", v_average) + "/10");
-        posterString = intent.getStringExtra("Poster");
+            Picasso.with(this).load("http://image.tmdb.org/t/p/w185/" + posterString).into(poster);
 
-        Picasso.with(this).load("http://image.tmdb.org/t/p/w185/" + posterString).into(poster);
+            String[] r_date = intent.getStringExtra("Date").split("-");
 
-        String[] r_date = intent.getStringExtra("Date").split("-");
+            releaseDate.setText(r_date[0]);
 
-        releaseDate.setText(r_date[0]);
-
-
+        }
 
     }
 }
