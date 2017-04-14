@@ -36,20 +36,23 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popular_movies);
 
-        if(NetworkUtils.isNetworkAvailable(this)) {
-            recyclerView = (RecyclerView) findViewById(R.id.rv_image);
-            mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-            mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        recyclerView = (RecyclerView) findViewById(R.id.rv_image);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-            recyclerView.setHasFixedSize(true);
-            if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-                recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-            }
-            else{
-                recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-            }
-            gridLayoutAdapter = new GridLayoutAdapter(this, getApplicationContext());
-            recyclerView.setAdapter(gridLayoutAdapter);
+        recyclerView.setHasFixedSize(true);
+        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
+        else{
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        }
+        gridLayoutAdapter = new GridLayoutAdapter(this, getApplicationContext());
+        recyclerView.setAdapter(gridLayoutAdapter);
+
+        if(NetworkUtils.isNetworkAvailable(this)) {
+
+            mLoadingIndicator.setVisibility(View.VISIBLE);
 
             loadMovieData("popular");
         }else {
@@ -59,17 +62,16 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     }
 
     private void showMovieDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the movie poster is visible */
-        recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
+
+            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
     }
 
     private void showErrorMessage() {
-        /* First, hide the currently visible data */
-        recyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error when data is unavailable */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+
+            mErrorMessageDisplay.setVisibility(View.VISIBLE);
+
+            recyclerView.setVisibility(View.INVISIBLE);
     }
 
     private void loadMovieData(String sortMovie) {
@@ -123,8 +125,10 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.popular_item) {
+            mLoadingIndicator.setVisibility(View.VISIBLE);
             loadMovieData("popular");
         }else if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.top_rated_item) {
+            mLoadingIndicator.setVisibility(View.VISIBLE);
             loadMovieData("top_rated");
         }else {
             alertUserOfError();
