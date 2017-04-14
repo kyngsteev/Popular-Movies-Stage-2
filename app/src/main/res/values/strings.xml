@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="error_message">Sorry! An error occurred. Please try again.</string>
+    <string name="error_title">Oops! Sorry</string>
+    <string name="error_dialog_message">Network not available! Please check network settings</string>
+    <string name="error_positive_button_text">OK</string>
+    <string name="popular_button">Popular Movies</string>
+    <string name="top_rated_button">Top Rated Movies</string>
+    <string name="title">Title</string>
+    <string name="release_date">2017</string>
+    <string name="rating">5.8/10</string>
+    <string name="overview">Movie plot goes here!</string>
+</resources>
