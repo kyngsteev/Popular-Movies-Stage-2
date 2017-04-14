@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -42,10 +43,13 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
             mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
             mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-            gridLayoutManager = new GridLayoutManager(this, 2);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(gridLayoutManager);
-
+            if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+                recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            }
+            else{
+                recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+            }
             gridLayoutAdapter = new GridLayoutAdapter(this, getApplicationContext());
             recyclerView.setAdapter(gridLayoutAdapter);
 
