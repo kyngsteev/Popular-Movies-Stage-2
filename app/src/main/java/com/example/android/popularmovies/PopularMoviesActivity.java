@@ -2,27 +2,19 @@ package com.example.android.popularmovies;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.adapter.GridLayoutAdapter;
 import com.example.android.popularmovies.data.MovieData;
 import com.example.android.popularmovies.networkutils.NetworkUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.net.URL;
 
 public class PopularMoviesActivity extends AppCompatActivity implements GridLayoutAdapter.GridLayoutAdapterOnClickHandler {
 
@@ -30,6 +22,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     private GridLayoutAdapter gridLayoutAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
+    private static final String API_KEY = ""; /*PLACE YOUR API KEY HERE*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +69,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
 
     private void loadMovieData(String sortMovie) {
         showMovieDataView();
-        String apiAddressKey = ""; /* Place your API KEY here*/
-        String sortParam = sortMovie;
-        new FetchMovieTaskListener.FetchMovieTask(this, new FetchMovieTaskCompleteListener()).execute(apiAddressKey, sortParam);
+        new FetchMovieTaskListener.FetchMovieTask(new FetchMovieTaskCompleteListener()).execute(API_KEY, sortMovie);
     }
 
     private void alertUserOfError(){

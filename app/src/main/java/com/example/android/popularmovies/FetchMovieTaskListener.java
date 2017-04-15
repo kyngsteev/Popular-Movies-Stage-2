@@ -1,6 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.android.popularmovies.data.MovieData;
@@ -22,14 +21,11 @@ public interface FetchMovieTaskListener<T> {
 class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
 
     MovieData[] movieData;
-    private static final String TAG = "FetchMovieTask";
 
-    private Context context;
     private FetchMovieTaskListener<MovieData> listener;
 
-    public FetchMovieTask(Context ctx, FetchMovieTaskListener<MovieData> listener)
+    public FetchMovieTask(FetchMovieTaskListener<MovieData> listener)
     {
-        this.context = ctx;
         this.listener = listener;
     }
 
