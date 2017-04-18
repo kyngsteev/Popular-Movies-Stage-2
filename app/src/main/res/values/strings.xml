@@ -10,4 +10,5 @@
     <string name="release_date">2017</string>
     <string name="rating">5.8/10</string>
     <string name="overview">Movie plot goes here!</string>
+    <string name="app_child_name">Movie Details</string>
 </resources>

@@ -1,8 +1,12 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +33,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         userRating = (TextView) findViewById(R.id.user_rating);
         poster = (ImageView) findViewById(R.id.poster_image);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         if(intent.hasExtra("Title") || intent.hasExtra("Plot") || intent.hasExtra("Rating") || intent.hasExtra("Date") || intent.hasExtra("Poster")) {
             title.setText(intent.getStringExtra("Title"));
@@ -44,5 +50,22 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.home:
+                Intent upIntent = getSupportParentActivityIntent();
+                if (NavUtils.shouldUpRecreateTask(this, upIntent) && upIntent != null){
+                    TaskStackBuilder.create(this)
+                            .addNextIntentWithParentStack(upIntent)
+                            .startActivities();
+                }else{
+                    NavUtils.navigateUpTo(this, upIntent);
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
