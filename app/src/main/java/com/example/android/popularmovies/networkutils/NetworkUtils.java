@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.android.popularmovies.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -20,8 +22,10 @@ import java.util.Scanner;
 public class NetworkUtils {
 
 
-    private final static String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
+    private final static String MOVIE_BASE_URL = "https://api.themoviedb.org/3/";
     private final static String PARAM_QUERY = "api_key";
+    private static final String API_KEY = BuildConfig.API_KEY;
+    private static final String MOVIE = "movie";
     private final static String TAG = NetworkUtils.class.getSimpleName();
 
 
@@ -36,16 +40,34 @@ public class NetworkUtils {
         return isAvailable;
     }
 
-    public static URL buildUrl(String apiKey, String sortParam){
+    public static URL buildUrl(String sortParam){
 
-        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                .appendPath(sortParam)
-                .appendQueryParameter(PARAM_QUERY, apiKey)
-                .build();
+        sortParam = sortParam == null ? "" : sortParam;
+
+        Uri uri;
+        switch (sortParam) {
+            case "popular":
+                uri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendPath(MOVIE)
+                        .appendPath(sortParam)
+                        .appendQueryParameter(PARAM_QUERY, API_KEY)
+                        .build();
+                break;
+            case "top_rated":
+               uri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendPath(MOVIE)
+                        .appendPath(sortParam)
+                        .appendQueryParameter(PARAM_QUERY, API_KEY)
+                        .build();
+                break;
+            default:
+                uri = latestMovies();
+                break;
+        }
 
         URL url = null;
         try {
-            url = new URL(builtUri.toString());
+            url = new URL(uri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -53,6 +75,14 @@ public class NetworkUtils {
         Log.v(TAG, "Built URI " + url);
 
         return url;
+    }
+
+    private static Uri latestMovies () {
+        return Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(MOVIE)
+                .appendPath("popular")
+                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .build();
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {

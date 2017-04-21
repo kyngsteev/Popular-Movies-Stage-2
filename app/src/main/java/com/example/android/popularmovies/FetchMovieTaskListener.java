@@ -41,9 +41,8 @@ class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
             return null;
         }
 
-        String apiUrl = params[0];
-        String sortUrl = params[1];
-        URL movieRequestUrl = NetworkUtils.buildUrl(apiUrl, sortUrl);
+        String sortUrl = params[0];
+        URL movieRequestUrl = NetworkUtils.buildUrl(sortUrl);
 
         try {
             String jsonMovieResponse = NetworkUtils

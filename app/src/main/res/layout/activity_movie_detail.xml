@@ -10,13 +10,13 @@
     <TextView
         android:id="@+id/original_title"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:background="#009688"
+        android:layout_height="@dimen/title_layout_height"
+        android:background="@color/background"
         android:textSize="20sp"
-        android:textColor="#ffffff"
+        android:textColor="@color/textColor"
         android:text="@string/title"
-        android:paddingLeft="25dp"
-        android:paddingTop="5dp"/>
+        android:paddingLeft="@dimen/title_paddingLeft"
+        android:paddingTop="@dimen/title_paddingTop"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/horizontal_layout_margin"
         android:orientation="horizontal">
 
         <ImageView
@@ -47,7 +47,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_margin="@dimen/vertical_layout_margin"
             android:orientation="vertical">
 
             <TextView
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/release_date"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/release_textsize"/>
 
             <TextView
                 android:id="@+id/user_rating"
@@ -65,7 +65,7 @@
                 android:layout_weight="1"
                 android:text="@string/rating"
                 android:layout_below="@+id/release_date"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="@dimen/rating_marginTop"/>
 
 
         </LinearLayout>
@@ -75,7 +75,7 @@
             android:id="@+id/over_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="@dimen/overview_layout_margin"
             android:layout_below="@+id/linearLayout"
             android:layout_centerHorizontal="true"
             android:text="@string/overview" />

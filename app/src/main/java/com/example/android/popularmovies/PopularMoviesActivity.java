@@ -3,6 +3,8 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +24,6 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     private GridLayoutAdapter gridLayoutAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
-    private static final String API_KEY = ""; /*PLACE YOUR API KEY HERE*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
 
     private void loadMovieData(String sortMovie) {
         showMovieDataView();
-        new FetchMovieTaskListener.FetchMovieTask(new FetchMovieTaskCompleteListener()).execute(API_KEY, sortMovie);
+        new FetchMovieTaskListener.FetchMovieTask(new FetchMovieTaskCompleteListener()).execute(sortMovie);
     }
 
     private void alertUserOfError(){
