@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.networkutils;
+package com.example.android.popularmovies.utilities;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

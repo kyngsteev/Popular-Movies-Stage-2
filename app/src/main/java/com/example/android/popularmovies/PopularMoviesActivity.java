@@ -3,8 +3,9 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,14 +17,24 @@ import android.widget.TextView;
 
 import com.example.android.popularmovies.adapter.GridLayoutAdapter;
 import com.example.android.popularmovies.data.MovieData;
-import com.example.android.popularmovies.networkutils.NetworkUtils;
+import com.example.android.popularmovies.utilities.AlertDialogFragment;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 
-public class PopularMoviesActivity extends AppCompatActivity implements GridLayoutAdapter.GridLayoutAdapterOnClickHandler {
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URL;
+
+public class PopularMoviesActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<MovieData[]>,
+        GridLayoutAdapter.GridLayoutAdapterOnClickHandler {
 
     private RecyclerView recyclerView;
     private GridLayoutAdapter gridLayoutAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
+    public static final String SORT_DATA_KEY = "key";
+    private static final int MOVIE_LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,33 +55,114 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
         gridLayoutAdapter = new GridLayoutAdapter(this, getApplicationContext());
         recyclerView.setAdapter(gridLayoutAdapter);
 
+        Bundle sortBundle = new Bundle();
+        sortBundle.putString(SORT_DATA_KEY, getResources().getString(R.string.popular));
+
+        LoaderManager.LoaderCallbacks<MovieData[]> callback = PopularMoviesActivity.this;
+
         if(NetworkUtils.isNetworkAvailable(this)) {
 
             mLoadingIndicator.setVisibility(View.VISIBLE);
 
-            loadMovieData("popular");
+            getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, sortBundle, callback);
+
         }else {
             alertUserOfError();
         }
 
     }
 
-    private void showMovieDataView() {
-            recyclerView.setVisibility(View.VISIBLE);
 
-            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+
+    @Override
+    public Loader<MovieData[]> onCreateLoader(int id, final Bundle args) {
+
+        return new AsyncTaskLoader<MovieData[]>(this) {
+
+            MovieData[] cachedMovieData;
+
+            @Override
+            protected void onStartLoading() {
+                if (cachedMovieData == null){
+                    forceLoad();
+                }else{
+                    super.deliverResult(cachedMovieData);
+                }
+            }
+
+            @Override
+            public MovieData[] loadInBackground() {
+
+                URL movieRequestUrl = NetworkUtils.buildUrl(args.getString(SORT_DATA_KEY));
+
+                try {
+                    String jsonMovieResponse = NetworkUtils
+                            .getResponseFromHttpUrl(movieRequestUrl);
+
+
+                    JSONObject movieResponse = new JSONObject(jsonMovieResponse);
+                    JSONArray movieResults = movieResponse.getJSONArray("results");
+                    MovieData[] movieData = new MovieData[movieResults.length()];
+
+                    for (int i = 0; i < movieResults.length(); i++) {
+                        JSONObject movieResult = movieResults.getJSONObject(i);
+                        MovieData data = new MovieData();
+                        data.setPosterPath(movieResult.getString("poster_path"));
+                        data.setId(movieResult.getInt("id"));
+                        data.setOriginalTitle(movieResult.getString("title"));
+                        data.setOverView(movieResult.getString("overview"));
+                        data.setReleaseDate(movieResult.getString("release_date"));
+                        data.setVoteAverage(movieResult.getDouble("vote_average"));
+
+                        movieData[i] = data;
+                    }
+
+                    return movieData;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            public void deliverResult(MovieData[] data) {
+                cachedMovieData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<MovieData[]> loader, MovieData[] data) {
+
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        gridLayoutAdapter.setMovieData(data);
+        if (data == null) {
+            showErrorMessage();
+        }else{
+            showMovieDataView();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<MovieData[]> loader) {
+        gridLayoutAdapter.setMovieData(null);
+    }
+
+
+    private void showMovieDataView() {
+        recyclerView.setVisibility(View.VISIBLE);
+
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
     }
 
     private void showErrorMessage() {
 
-            mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
 
-            recyclerView.setVisibility(View.INVISIBLE);
-    }
-
-    private void loadMovieData(String sortMovie) {
-        showMovieDataView();
-        new FetchMovieTaskListener.FetchMovieTask(new FetchMovieTaskCompleteListener()).execute(sortMovie);
+        recyclerView.setVisibility(View.INVISIBLE);
     }
 
     private void alertUserOfError(){
@@ -91,21 +183,6 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
         startActivity(intent);
     }
 
-    public class FetchMovieTaskCompleteListener implements FetchMovieTaskListener<MovieData> {
-
-        @Override
-        public void onTaskComplete(MovieData[] moviePosters) {
-
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (moviePosters != null) {
-                showMovieDataView();
-                gridLayoutAdapter.setMovieData(moviePosters);
-            }else{
-                showErrorMessage();
-            }
-
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,12 +193,20 @@ public class PopularMoviesActivity extends AppCompatActivity implements GridLayo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        Bundle sortBundle = new Bundle();
+
         if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.popular_item) {
+
+            sortBundle.putString(SORT_DATA_KEY, getResources().getString(R.string.popular));
             mLoadingIndicator.setVisibility(View.VISIBLE);
-            loadMovieData("popular");
+            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, sortBundle, this);
+
         }else if(NetworkUtils.isNetworkAvailable(this) && item.getItemId() == R.id.top_rated_item) {
+
+            sortBundle.putString(SORT_DATA_KEY, getResources().getString(R.string.top_rated));
             mLoadingIndicator.setVisibility(View.VISIBLE);
-            loadMovieData("top_rated");
+            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, sortBundle, this);
+
         }else {
             alertUserOfError();
         }

@@ -11,4 +11,6 @@
     <string name="rating">5.8/10</string>
     <string name="overview">Movie plot goes here!</string>
     <string name="app_child_name">Movie Details</string>
+    <string name="popular">popular</string>
+    <string name="top_rated">top_rated</string>
 </resources>
