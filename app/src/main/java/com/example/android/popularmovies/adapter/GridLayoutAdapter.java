@@ -11,6 +11,9 @@ import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.MovieData;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Omoarukhe on 11/04/2017.
  */
@@ -52,12 +55,13 @@ public class GridLayoutAdapter extends RecyclerView.Adapter<GridLayoutAdapter.mo
 
     public class movieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @BindView(R.id.movie_image)
         ImageView imageView;
 
         public movieHolder(View itemView) {
             super(itemView);
 
-            imageView = (ImageView) itemView.findViewById(R.id.movie_image);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

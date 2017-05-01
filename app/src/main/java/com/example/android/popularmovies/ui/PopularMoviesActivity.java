@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapter.GridLayoutAdapter;
 import com.example.android.popularmovies.data.MovieData;
 import com.example.android.popularmovies.utilities.AlertDialogFragment;
@@ -25,14 +26,23 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class PopularMoviesActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<MovieData[]>,
         GridLayoutAdapter.GridLayoutAdapterOnClickHandler {
 
-    private RecyclerView recyclerView;
-    private GridLayoutAdapter gridLayoutAdapter;
-    private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.rv_image)
+    RecyclerView recyclerView;
+
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
+
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
+
+    GridLayoutAdapter gridLayoutAdapter;
     public static final String SORT_DATA_KEY = "key";
     private static final int MOVIE_LOADER_ID = 0;
 
@@ -40,10 +50,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popular_movies);
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_image);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        ButterKnife.bind(this);
 
         recyclerView.setHasFixedSize(true);
         if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){

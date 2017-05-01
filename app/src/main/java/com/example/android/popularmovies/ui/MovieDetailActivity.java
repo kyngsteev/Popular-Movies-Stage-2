@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.ui;
 
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
@@ -10,15 +10,29 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.R;
 import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
-    private TextView title;
-    private TextView overview;
-    private TextView releaseDate;
-    private TextView userRating;
-    private ImageView poster;
+    @BindView(R.id.original_title)
+    TextView title;
+
+    @BindView(R.id.over_view)
+    TextView overview;
+
+    @BindView(R.id.release_date)
+    TextView releaseDate;
+
+    @BindView(R.id.user_rating)
+    TextView userRating;
+
+    @BindView(R.id.poster_image)
+    ImageView poster;
+
     private double v_average = 0.0;
     private String posterString;
 
@@ -26,12 +40,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
-
-        title = (TextView) findViewById(R.id.original_title);
-        overview = (TextView) findViewById(R.id.over_view);
-        releaseDate = (TextView) findViewById(R.id.release_date);
-        userRating = (TextView) findViewById(R.id.user_rating);
-        poster = (ImageView) findViewById(R.id.poster_image);
+        ButterKnife.bind(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
