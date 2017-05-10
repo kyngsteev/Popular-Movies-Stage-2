@@ -15,6 +15,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * Created by Omoarukhe on 11/04/2017.
  */
@@ -84,6 +90,14 @@ public class NetworkUtils {
                 .appendQueryParameter(PARAM_QUERY, API_KEY)
                 .build();
     }
+
+    private String reviewUrl(int id){
+        return "https://api.themoviedb.org/3/movie/"
+                + id +"/reviews?api_key="
+                +BuildConfig.API_KEY;
+    }
+
+
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

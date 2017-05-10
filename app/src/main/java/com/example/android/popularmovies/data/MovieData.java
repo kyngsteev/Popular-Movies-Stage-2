@@ -1,10 +1,13 @@
 package com.example.android.popularmovies.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Omoarukhe on 12/04/2017.
  */
 
-public class MovieData {
+public class MovieData implements Parcelable{
 
     private String posterPath;
     private String overView;
@@ -12,6 +15,8 @@ public class MovieData {
     private int id;
     private double voteAverage;
     private String originalTitle;
+
+    public MovieData(){}
 
 
     public String getPosterPath() {
@@ -61,4 +66,40 @@ public class MovieData {
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(posterPath);
+        dest.writeString(overView);
+        dest.writeString(releaseDate);
+        dest.writeString(originalTitle);
+        dest.writeInt(id);
+        dest.writeDouble(voteAverage);
+    }
+
+    private MovieData(Parcel in){
+        posterPath = in.readString();
+        overView = in.readString();
+        releaseDate = in.readString();
+        originalTitle = in.readString();
+        id = in.readInt();
+        voteAverage = in.readDouble();
+    }
+
+    public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {
+        @Override
+        public MovieData createFromParcel(Parcel source) {
+            return new MovieData(source);
+        }
+
+        @Override
+        public MovieData[] newArray(int size) {
+            return new MovieData[size];
+        }
+    };
 }

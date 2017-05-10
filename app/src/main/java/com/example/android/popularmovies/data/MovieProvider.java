@@ -1,0 +1,163 @@
+package com.example.android.popularmovies.data;
+
+import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import static com.example.android.popularmovies.data.MovieContract.CONTENT_AUTHORITY;
+import static com.example.android.popularmovies.data.MovieContract.MOVIES_CONTENT_URI;
+import static com.example.android.popularmovies.data.MovieContract.PATH_MOVIE;
+import static com.example.android.popularmovies.data.MovieContract.PATH_REVIEW;
+import static com.example.android.popularmovies.data.MovieContract.PATH_TRAILER;
+
+/**
+ * Created by Omoarukhe on 09/05/2017.
+ */
+
+public class MovieProvider extends ContentProvider {
+    public static final int CODE_MOVIE = 100;
+    public static final int CODE_MOVIE_WITH_ID = 101;
+    public static final int CODE_TRAILER = 200;
+    public static final int CODE_TRAILER_WITH_ID = 201;
+    public static final int CODE_REVIEW = 300;
+    public static final int CODE_REVIEW_WITH_ID = 301;
+
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+
+    private MovieDbHelper mOpenHelper;
+
+    public static UriMatcher buildUriMatcher() {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE, CODE_MOVIE);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE + "/#", CODE_MOVIE_WITH_ID);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_TRAILER, CODE_TRAILER);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_TRAILER + "/#", CODE_TRAILER_WITH_ID);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_REVIEW, CODE_REVIEW);
+        matcher.addURI(CONTENT_AUTHORITY, PATH_REVIEW + "/#", CODE_REVIEW_WITH_ID);
+        return matcher;
+    }
+
+    @Override
+    public boolean onCreate() {
+        mOpenHelper = new MovieDbHelper(getContext());
+        return true;
+    }
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Cursor cursor;
+        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE:
+                cursor = db.query(MovieContract.MoviesEntry.MOVIE_TABLE,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+            case CODE_MOVIE_WITH_ID:
+                cursor = db.query(MovieContract.MoviesEntry.MOVIE_TABLE,
+                        projection,
+                        selection,
+                        null,
+                        null,
+                        null,
+                        null);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri " + uri);
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+    @Override
+    public String getType(Uri uri) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        Uri returnUri;
+        long id;
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE_WITH_ID:
+                id = db.insert(MovieContract.MoviesEntry.MOVIE_TABLE, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(MOVIES_CONTENT_URI, id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            case CODE_TRAILER_WITH_ID:
+                id = db.insert(MovieContract.TrailerEntry.TRAILER_TABLE, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(MOVIES_CONTENT_URI, id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            case CODE_REVIEW_WITH_ID:
+                id = db.insert(MovieContract.ReviewsEntry.REVIEWS_TABLE, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(MOVIES_CONTENT_URI, id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return returnUri;
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int numberOfDeletedFavorites;
+        if (null == selection) selection = "1";
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE_WITH_ID:
+                numberOfDeletedFavorites = db.delete(MovieContract.MoviesEntry.MOVIE_TABLE,
+                        selection,
+                        selectionArgs);
+                break;
+            case CODE_TRAILER_WITH_ID:
+                numberOfDeletedFavorites = db.delete(MovieContract.TrailerEntry.TRAILER_TABLE,
+                        selection,
+                        selectionArgs);
+                break;
+            case CODE_REVIEW_WITH_ID:
+                numberOfDeletedFavorites = db.delete(MovieContract.ReviewsEntry.REVIEWS_TABLE,
+                        selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri " + uri);
+        }
+
+        if (numberOfDeletedFavorites != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return numberOfDeletedFavorites;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+}

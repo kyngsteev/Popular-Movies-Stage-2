@@ -45,6 +45,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements
     GridLayoutAdapter gridLayoutAdapter;
     public static final String SORT_DATA_KEY = "key";
     private static final int MOVIE_LOADER_ID = 0;
+    public static final String MOVIE = "movie";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,11 +182,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements
     public void onClick(MovieData movie) {
         Intent intent = new Intent(this, MovieDetailActivity.class);
 
-        intent.putExtra("Title", movie.getOriginalTitle());
-        intent.putExtra("Poster", movie.getPosterPath());
-        intent.putExtra("Plot", movie.getOverView());
-        intent.putExtra("Rating", movie.getVoteAverage());
-        intent.putExtra("Date", movie.getReleaseDate());
+        intent.putExtra(MOVIE, movie);
 
         startActivity(intent);
     }

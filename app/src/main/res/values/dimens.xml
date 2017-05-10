@@ -7,8 +7,8 @@
     <dimen name="title_layout_height">75dp</dimen>
     <dimen name="title_paddingLeft">25dp</dimen>
     <dimen name="title_paddingTop">5dp</dimen>
-    <dimen name="horizontal_layout_margin">15dp</dimen>
-    <dimen name="vertical_layout_margin">15dp</dimen>
+    <dimen name="horizontal_layout_margin">16dp</dimen>
+    <dimen name="vertical_layout_margin">16dp</dimen>
     <dimen name="release_textsize">20sp</dimen>
     <dimen name="rating_marginTop">5dp</dimen>
     <dimen name="overview_layout_margin">20dp</dimen>
