@@ -2,6 +2,7 @@ package com.example.android.popularmovies.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -19,6 +20,7 @@ import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapter.GridLayoutAdapter;
 import com.example.android.popularmovies.data.MovieData;
 import com.example.android.popularmovies.utilities.AlertDialogFragment;
+import com.example.android.popularmovies.utilities.DbUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONArray;
@@ -210,6 +212,21 @@ public class PopularMoviesActivity extends AppCompatActivity implements
             sortBundle.putString(SORT_DATA_KEY, getResources().getString(R.string.top_rated));
             mLoadingIndicator.setVisibility(View.VISIBLE);
             getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, sortBundle, this);
+
+        }else if(item.getItemId() == R.id.favorite_rated_item){
+            AsyncTask mBackgroundTask = new AsyncTask<Object, Object, MovieData[]>(){
+
+                @Override
+                protected MovieData[] doInBackground(Object... params) {
+                    return DbUtils.getFavoriteMovies(getApplicationContext());
+                }
+
+                @Override
+                protected void onPostExecute(MovieData[] movieDatas) {
+                    gridLayoutAdapter.setMovieData(movieDatas);
+                }
+            };
+            mBackgroundTask.execute();
 
         }else {
             alertUserOfError();

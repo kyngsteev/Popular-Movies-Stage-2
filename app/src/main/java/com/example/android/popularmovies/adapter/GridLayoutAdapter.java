@@ -43,8 +43,12 @@ public class GridLayoutAdapter extends RecyclerView.Adapter<GridLayoutAdapter.mo
 
     @Override
     public void onBindViewHolder(movieHolder holder, int position) {
-        String posterPath = "http://image.tmdb.org/t/p/w185/" + movieDatas[position].getPosterPath();
-        Picasso.with(context).load(posterPath).into(holder.imageView);
+        if(movieDatas[position].getPosterPath() == null){
+            Picasso.with(context).load(R.drawable.no_image_icon).into(holder.imageView);
+        }else{
+            String posterPath = "http://image.tmdb.org/t/p/w185/" + movieDatas[position].getPosterPath();
+            Picasso.with(context).load(posterPath).into(holder.imageView);
+        }
     }
 
     @Override

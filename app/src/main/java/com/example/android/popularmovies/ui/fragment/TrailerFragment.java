@@ -37,21 +37,21 @@ public class TrailerFragment extends Fragment {
 
     private final static String MOVIE_DATA_TAG = "TRAILER_DATA";
 
-    Trailers[] mTrailers;
-    RecyclerView tRecyclerView;
-    TrailerAdapter mTrailerAdapter;
+    private Trailers[] mTrailers;
+    private RecyclerView tRecyclerView;
+    private TrailerAdapter mTrailerAdapter;
+    private MovieData selectedMovie;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tRecyclerView = (RecyclerView) inflater.inflate(R.layout.trailer_tab_layout, container, false);
 
-        MovieData selectedMovie = getActivity().getIntent().getParcelableExtra(MOVIE);
-        int movieId = selectedMovie.getId();
+        selectedMovie = getActivity().getIntent().getParcelableExtra(MOVIE);
 
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(trailerUrl(movieId))
+                .url(trailerUrl(selectedMovie.getId()))
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -67,6 +67,8 @@ public class TrailerFragment extends Fragment {
                     Log.d(MOVIE_DATA_TAG, jsonData);
                     if(response.isSuccessful()){
                         mTrailers = getTrailerData(jsonData);
+                        if(getActivity() == null)
+                            return;
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

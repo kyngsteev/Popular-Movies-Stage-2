@@ -1,5 +1,7 @@
 package com.example.android.popularmovies.ui.fragment;
 
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,8 +14,11 @@ import android.view.ViewGroup;
 import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapter.ReviewAdapter;
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.MovieData;
 import com.example.android.popularmovies.data.Reviews;
+import com.example.android.popularmovies.utilities.DbUtils;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,55 +39,56 @@ import static com.example.android.popularmovies.ui.PopularMoviesActivity.MOVIE;
  */
 
 public class ReviewFragment extends Fragment{
-    private final static String REVIEW_DATA_TAG = "REVIEW_DATA";
 
-    Reviews[] mReviews;
-    RecyclerView recyclerView;
-    ReviewAdapter mReviewAdapter;
+    private static final String REVIEW_DATA_TAG = "fragmentReview";
+    private Reviews[] mReviews;
+    private RecyclerView recyclerView;
+    private ReviewAdapter mReviewAdapter;
+    private MovieData selectedMovie;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         recyclerView = (RecyclerView) inflater.inflate(R.layout.review_tab_layout, container, false);
 
-        MovieData selectedMovie = getActivity().getIntent().getParcelableExtra(MOVIE);
-        int movieId = selectedMovie.getId();
+        selectedMovie = getActivity().getIntent().getParcelableExtra(MOVIE);
 
-        OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder()
-                .url(reviewUrl(movieId))
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+            Request request = new Request.Builder()
+                    .url(NetworkUtils.reviewUrl(selectedMovie.getId()))
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
 
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String jsonData = response.body().string();
-                    Log.d(REVIEW_DATA_TAG, jsonData);
-                    if(response.isSuccessful()){
-                        mReviews = getReviewData(jsonData);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-                                mReviewAdapter = new ReviewAdapter(getActivity(), mReviews);
-                                recyclerView.setAdapter(mReviewAdapter);
-                            }
-                        });
-
-                    }
-                } catch (IOException e) {
-                    Log.e(REVIEW_DATA_TAG, "Exception caught", e );
-                } catch (JSONException e) {
-                    Log.e(REVIEW_DATA_TAG, "JSONException caught", e);
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try {
+                        String jsonData = response.body().string();
+                        Log.d(REVIEW_DATA_TAG, jsonData);
+                        if (response.isSuccessful()) {
+                            mReviews = getReviewData(jsonData);
+                            if(getActivity() == null)
+                                return;
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+                                    mReviewAdapter = new ReviewAdapter(getActivity(), mReviews);
+                                    recyclerView.setAdapter(mReviewAdapter);
+                                }
+                            });
+                        }
+                    } catch (IOException e) {
+                        Log.e(REVIEW_DATA_TAG, "Exception caught", e);
+                    } catch (JSONException e) {
+                        Log.e(REVIEW_DATA_TAG, "JSONException caught", e);
+                    }
+                }
+            });
 
         return recyclerView;
     }
@@ -102,11 +108,5 @@ public class ReviewFragment extends Fragment{
         }
 
         return reviewTrailers;
-    }
-
-    private String reviewUrl(int id){
-        return "https://api.themoviedb.org/3/movie/"
-                + id +"/reviews?api_key="
-                + BuildConfig.API_KEY;
     }
 }

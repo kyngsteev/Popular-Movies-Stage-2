@@ -91,13 +91,11 @@ public class NetworkUtils {
                 .build();
     }
 
-    private String reviewUrl(int id){
+    public static String reviewUrl(int id){
         return "https://api.themoviedb.org/3/movie/"
                 + id +"/reviews?api_key="
-                +BuildConfig.API_KEY;
+                + BuildConfig.API_KEY;
     }
-
-
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

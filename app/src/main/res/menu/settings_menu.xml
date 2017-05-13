@@ -14,4 +14,10 @@
         app:showAsAction="never|collapseActionView">
     </item>
 
+    <item android:id="@+id/favorite_rated_item"
+        android:title="@string/favorite_button"
+        android:orderInCategory="3"
+        app:showAsAction="never|collapseActionView">
+    </item>
+
 </menu>

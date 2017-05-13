@@ -16,24 +16,11 @@ public class MovieContract {
     public static final String PATH_REVIEW = "review";
 
     public static final Uri MOVIES_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
-    public static final Uri TRAILERS_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_TRAILER).build();
-    public static final Uri REVIEWS_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEW).build();
 
     public static final Uri buildMovieUriWithId(int id) {
         return MOVIES_CONTENT_URI.buildUpon().appendPath(Integer.toString(id))
                 .build();
     }
-
-    public static final Uri buildTrailerUriWithId(int id) {
-        return TRAILERS_CONTENT_URI.buildUpon().appendPath(Integer.toString(id))
-                .build();
-    }
-
-    public static final Uri buildReviewUriWithId(int id) {
-        return REVIEWS_CONTENT_URI.buildUpon().appendPath(Integer.toString(id))
-                .build();
-    }
-
 
     public static final class MoviesEntry implements BaseColumns {
         //Constants for MovieTable
@@ -46,15 +33,4 @@ public class MovieContract {
         public static final String COLUMN_ID = "movie_id";
     }
 
-    public static final class TrailerEntry implements BaseColumns {
-        public static final String TRAILER_TABLE = "trailer";
-        public static final String COLUMN_VIDEO_URL = "video_url";
-        public static final String COLUMN_NAME = "name";
-    }
-
-    public static final class ReviewsEntry implements BaseColumns {
-        public static final String REVIEWS_TABLE = "reviews";
-        public static final String COLUMN_AUTHOR = "author";
-        public static final String COLUMN_CONTENT = "content";
-    }
 }

@@ -7,8 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import static com.example.android.popularmovies.data.MovieContract.CONTENT_AUTHORITY;
 import static com.example.android.popularmovies.data.MovieContract.MOVIES_CONTENT_URI;
@@ -23,10 +21,6 @@ import static com.example.android.popularmovies.data.MovieContract.PATH_TRAILER;
 public class MovieProvider extends ContentProvider {
     public static final int CODE_MOVIE = 100;
     public static final int CODE_MOVIE_WITH_ID = 101;
-    public static final int CODE_TRAILER = 200;
-    public static final int CODE_TRAILER_WITH_ID = 201;
-    public static final int CODE_REVIEW = 300;
-    public static final int CODE_REVIEW_WITH_ID = 301;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -36,10 +30,6 @@ public class MovieProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE, CODE_MOVIE);
         matcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE + "/#", CODE_MOVIE_WITH_ID);
-        matcher.addURI(CONTENT_AUTHORITY, PATH_TRAILER, CODE_TRAILER);
-        matcher.addURI(CONTENT_AUTHORITY, PATH_TRAILER + "/#", CODE_TRAILER_WITH_ID);
-        matcher.addURI(CONTENT_AUTHORITY, PATH_REVIEW, CODE_REVIEW);
-        matcher.addURI(CONTENT_AUTHORITY, PATH_REVIEW + "/#", CODE_REVIEW_WITH_ID);
         return matcher;
     }
 
@@ -99,22 +89,6 @@ public class MovieProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
-            case CODE_TRAILER_WITH_ID:
-                id = db.insert(MovieContract.TrailerEntry.TRAILER_TABLE, null, values);
-                if (id > 0) {
-                    returnUri = ContentUris.withAppendedId(MOVIES_CONTENT_URI, id);
-                } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
-                }
-                break;
-            case CODE_REVIEW_WITH_ID:
-                id = db.insert(MovieContract.ReviewsEntry.REVIEWS_TABLE, null, values);
-                if (id > 0) {
-                    returnUri = ContentUris.withAppendedId(MOVIES_CONTENT_URI, id);
-                } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
-                }
-                break;
             default:
                 throw new UnsupportedOperationException("Unknown Uri " + uri);
         }
@@ -133,16 +107,6 @@ public class MovieProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case CODE_MOVIE_WITH_ID:
                 numberOfDeletedFavorites = db.delete(MovieContract.MoviesEntry.MOVIE_TABLE,
-                        selection,
-                        selectionArgs);
-                break;
-            case CODE_TRAILER_WITH_ID:
-                numberOfDeletedFavorites = db.delete(MovieContract.TrailerEntry.TRAILER_TABLE,
-                        selection,
-                        selectionArgs);
-                break;
-            case CODE_REVIEW_WITH_ID:
-                numberOfDeletedFavorites = db.delete(MovieContract.ReviewsEntry.REVIEWS_TABLE,
                         selection,
                         selectionArgs);
                 break;
